@@ -50,10 +50,8 @@ func (d dingdingImpl) send(msg string) (err error) {
 	}
 
 	bytesData, _ := json.Marshal(data)
-	url := d.getURL()
-	fmt.Println("请求地址:", url)
 	resp, err := http.Post(
-		url,
+		d.getURL(),
 		"application/json",
 		bytes.NewReader(bytesData),
 	)
