@@ -1,28 +1,54 @@
 package notice
 
-import "sync"
+import (
+	"errors"
+	"sync"
+)
 
 const DEFAULT = "default"
 
 var (
 	mt sync.Mutex
-	keyOfINotice = make(map[string]INotice)
+	keyOfInstance = make(map[string]INotice)
 )
 
-func Default() INotice {
-	inst, ok := keyOfINotice[DEFAULT]
+func Default() (INotice, error) {
+	inst, ok := keyOfInstance[DEFAULT]
 	if !ok {
-		panic("default INotice is not initialize ")
+		return nil, errors.New("default INotice is not initialize")
 	}
 
-	return inst
+	return inst, nil
 }
 
-func SetDefault(key string, inst INotice) {
+func Get(key string) (INotice, error) {
 	mt.Lock()
 	defer mt.Unlock()
+
+	inst, ok := keyOfInstance[key]
+	if !ok {
+		return nil, errors.New("key install is not exist")
+	}
+
+	return inst, nil
+}
+
+func Set(key string, inst INotice) {
+	mt.Lock()
+	defer mt.Unlock()
+
 	if inst == nil {
 		return
 	}
-	keyOfINotice[key] = inst
+	keyOfInstance[key] = inst
+}
+
+func SetDefault(inst INotice) {
+	mt.Lock()
+	defer mt.Unlock()
+
+	if inst == nil {
+		return
+	}
+	keyOfInstance[DEFAULT] = inst
 }
