@@ -72,8 +72,11 @@ func (d dingdingImpl) send(msg string) (err error) {
 	}
 	result := &respResult{}
 	body, _ := ioutil.ReadAll(resp.Body)
-	json.Unmarshal(body, result)
-	fmt.Println("请求结果: ", result)
+	_ = json.Unmarshal(body, result)
+	if result.ErrCode != 0 {
+		err = fmt.Errorf(result.ErrMsg)
+		return
+	}
 
 	return
 }
